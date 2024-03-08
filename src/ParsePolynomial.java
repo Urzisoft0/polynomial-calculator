@@ -11,7 +11,7 @@ public class ParsePolynomial {
 
     public TreeMap<Integer, Integer> Parse() {
         TreeMap<Integer, Integer> aa = new TreeMap<>();
-        this.polynomial.replaceAll("\\s+", "");
+        this.polynomial = this.polynomial.replaceAll("\\s+", "");
         String regex = "([+-]?\\d+)?x\\^(\\d+)|([+-]?\\d*)x(\\^\\d+)?|([+-]?\\d+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(this.polynomial);

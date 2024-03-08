@@ -9,6 +9,7 @@ interface Copy {
     public Map<Integer, Integer> DeepCopy(Map<Integer, Integer> original);
 }
 
+
 public class Polynomial implements Copy {
     TreeMap<Integer, Integer> polyMap = new TreeMap<>();
 
@@ -41,8 +42,12 @@ public class Polynomial implements Copy {
             if (polyMapAux2.get(var_exponent) != null) { 
                 int sum = var.getValue() + polyMapAux2.get(var_exponent);
 
-                res.put(var_exponent, sum);
+                if (sum != 0) {
+                    res.put(var_exponent, sum);
+                    
+                }
                 polyMapAux2.remove(var_exponent);
+                
             }
             else 
                 res.put(var_exponent, var.getValue());
@@ -65,8 +70,9 @@ public class Polynomial implements Copy {
                 int sub = polyMap.get(var_exponent) - polyMapAux2.get(var_exponent);
                 if (sub != 0) {
                     res.put(var_exponent, sub);
-                    polyMapAux2.remove(var_exponent); 
+                    
                 }
+                polyMapAux2.remove(var_exponent); 
             }
             else
                 res.put(var_exponent, var.getValue());
@@ -141,6 +147,8 @@ public class Polynomial implements Copy {
             int coefficient = entry.getValue();
             if (exponent != 0)
                 res.put(exponent - 1, exponent * coefficient);
+            else
+                res.put(exponent, 0);
         }
 
         return res;
@@ -156,29 +164,7 @@ public class Polynomial implements Copy {
         
     }
 
-    @Override
-    public String toString() {
-        String res = "";
-        for (Map.Entry<Integer, Integer> var : polyMap.entrySet()) {
-            if (var.getValue() > 0) {
-                if (var.getValue() != 1)
-                    res = res + "+" + var.getValue() + "x^" + var.getKey() + " ";
-                else
-                    res = res + "+" + var.getValue() + " ";
-            }
-                
-            else if (var.getValue() < 0) {
-                if (var.getValue() != -1)
-                    res = res + var.getValue() + "x^" + var.getKey() + " ";
-                else
-                    res = res + "x^" + var.getKey() + " ";
-            }
-                
-        }    
-        return res;
-    }
-
     public TreeMap<Integer, Integer> gTreeMap() {
-        return polyMap;
+        return this.polyMap;
     }
 }
