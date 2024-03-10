@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.*;
@@ -9,33 +10,38 @@ public class ParsePolynomial {
         this.polynomial = polynomial;
     }
 
-    public TreeMap<Integer, Integer> Parse() {
+    public TreeMap<Integer, Integer> Parse() throws Exception {
         TreeMap<Integer, Integer> aa = new TreeMap<>();
         this.polynomial = this.polynomial.replaceAll("\\s+", "");
         String regex = "([+-]?\\d+)?x\\^(\\d+)|([+-]?\\d*)x(\\^\\d+)?|([+-]?\\d+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(this.polynomial);
+        BigInteger maxIntValue = BigInteger.valueOf(Integer.MAX_VALUE);
+        BigInteger minIntValue = BigInteger.valueOf(Integer.MIN_VALUE);
 
         while (matcher.find()) {
             String regex2 = "\\d+";
             Pattern pattern2 = Pattern.compile(regex2);
-            Matcher matcher2 = pattern2.matcher(matcher.group(0));
-            Boolean x = false, neg = false, exp = false;
-            if (matcher.group(0).contains("-"))
-                neg = true;
+            boolean neg = matcher.group(0).contains("-");
 
             if (matcher.group(0).contains("^")) {
                 String[] array = matcher.group(0).split("x\\^");
-                String regex3 = "[+-]?\\d+";
-                Pattern pattern3 = Pattern.compile(regex2);
                 Matcher matcher3 = pattern2.matcher(array[0]);
                 Integer find;
+
                 if (matcher3.find()) {
-                    find = neg == true ? Integer.parseInt(matcher3.group(0)) * (-1) : Integer.parseInt(matcher3.group(0));
+                    BigInteger test = new BigInteger(matcher3.group(0));
+                    if (test.compareTo(maxIntValue) > 0 || test.compareTo(minIntValue) < 0)
+                        throw new Exception("Coefficient outside of INTEGER boundaries");
+                    find = neg ? Integer.parseInt(matcher3.group(0)) * (-1) : Integer.parseInt(matcher3.group(0));
                 } else {
-                    find = neg == true ? -1 : 1;
+                    find = neg ? -1 : 1;
                 }
 
+
+                BigInteger test = new BigInteger(array[1]);
+                if (test.compareTo(maxIntValue) > 0 || test.compareTo(minIntValue) < 0)
+                    throw new Exception("Exponent outside of INTEGER boundaries");
                 aa.put(Integer.parseInt(array[1]), find);
             } else {
                 String[] array = matcher.group(0).split("x");
@@ -43,18 +49,15 @@ public class ParsePolynomial {
                 if (array.length == 0)
                     aa.put(1, 1);
                 else {
+                    Matcher matcher3 = pattern2.matcher(array[0]);
 
-                
-                String regex3 = "[+-]?\\d+";
-                Pattern pattern3 = Pattern.compile(regex2);
-                Matcher matcher3 = pattern2.matcher(array[0]);
-
-                
-
-                if (matcher3.find() && array.length > 0) {
-                    find = neg == true ? Integer.parseInt(matcher3.group(0)) * (-1) : Integer.parseInt(matcher3.group(0));                        
+                if (matcher3.find()) {
+                    BigInteger test = new BigInteger(matcher3.group(0));
+                    if (test.compareTo(maxIntValue) > 0 || test.compareTo(minIntValue) < 0)
+                        throw new Exception("Coefficient outside of INTEGER boundaries");
+                    find = neg ? Integer.parseInt(matcher3.group(0)) * (-1) : Integer.parseInt(matcher3.group(0));
                 } else {
-                    find = neg == true ? -1 : 1;    
+                    find = neg ? -1 : 1;
                 }
                 
                 if (matcher.group(0).contains("x"))
@@ -65,11 +68,6 @@ public class ParsePolynomial {
             }
         }
 
-        // for (Map.Entry<Integer, Integer> ok : aa.entrySet()) {
-        //     System.out.println("coef: " + ok.getValue() + ":exp: " + ok.getKey());
-        // }
-
         return aa;
-
     }
 }

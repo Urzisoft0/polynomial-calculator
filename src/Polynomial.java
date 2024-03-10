@@ -1,29 +1,19 @@
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-interface Copy {
-    public Map<Integer, Integer> DeepCopy(Map<Integer, Integer> original);
-}
+public class Polynomial{
+    TreeMap<Integer, Integer> polyMap;
 
-
-public class Polynomial implements Copy {
-    TreeMap<Integer, Integer> polyMap = new TreeMap<>();
-
-    public Polynomial(String poly) {
+    public Polynomial(String poly) throws Exception {
         ParsePolynomial parser = new ParsePolynomial(poly);
         polyMap = parser.Parse();
     }
 
-    public void printPoly() {
-        for (Map.Entry<Integer, Integer> var: polyMap.entrySet())
-            System.out.println(var);
+    public Polynomial(Map<Integer, Integer> polyMap) {
+        this.polyMap = (TreeMap<Integer, Integer>) polyMap;
     }
 
-    public Map<Integer, Integer> DeepCopy(Map<Integer, Integer> original) {
+    private Map<Integer, Integer> DeepCopy(Map<Integer, Integer> original) {
         Map<Integer, Integer> copy = new TreeMap<>();
         for (Map.Entry<Integer, Integer> entry : original.entrySet()) 
             copy.put(entry.getKey(), entry.getValue());
@@ -32,15 +22,15 @@ public class Polynomial implements Copy {
 
     public Map<Integer, Integer> Addition1(Map<Integer, Integer> polyMap2) {
         Map<Integer, Integer> res = new TreeMap<>();
-        Map<Integer, Integer> polyMapAux2 = new TreeMap<>();
+        Map<Integer, Integer> polyMapAux2;
 
         polyMapAux2 = DeepCopy(polyMap2);
 
         for (Map.Entry<Integer, Integer> var : polyMap.entrySet()) {
-            int var_exponent = var.getKey();
+            Integer var_exponent = var.getKey();
 
             if (polyMapAux2.get(var_exponent) != null) { 
-                int sum = var.getValue() + polyMapAux2.get(var_exponent);
+                Integer sum = var.getValue() + polyMapAux2.get(var_exponent);
 
                 if (sum != 0) {
                     res.put(var_exponent, sum);
@@ -57,17 +47,17 @@ public class Polynomial implements Copy {
         return res;
     }
 
-    public Map<Integer, Integer> Substraction(Map<Integer, Integer> polyMap2) {
+    public Map<Integer, Integer> Subtraction(Map<Integer, Integer> polyMap2) {
         Map<Integer, Integer> res = new TreeMap<>();
-        Map<Integer, Integer> polyMapAux2 = new TreeMap<>();
+        Map<Integer, Integer> polyMapAux2;
 
         polyMapAux2 = DeepCopy(polyMap2);
 
         for (Map.Entry<Integer, Integer> var : polyMap.entrySet()) {
-            int var_exponent = var.getKey();
+            Integer var_exponent = var.getKey();
 
             if (polyMapAux2.get(var_exponent) != null) {  
-                int sub = polyMap.get(var_exponent) - polyMapAux2.get(var_exponent);
+                Integer sub = polyMap.get(var_exponent) - polyMapAux2.get(var_exponent);
                 if (sub != 0) {
                     res.put(var_exponent, sub);
                     
@@ -88,9 +78,9 @@ public class Polynomial implements Copy {
         
         for (Map.Entry<Integer, Integer> var : polyMap.entrySet()) {
             for (Map.Entry<Integer, Integer> var2 : polyMap2.entrySet()) {  
-                int var_exponent = var.getKey() + var2.getKey();
+                Integer var_exponent = var.getKey() + var2.getKey();
 
-                int var_coefficient = var.getValue() * var2.getValue();
+                Integer var_coefficient = var.getValue() * var2.getValue();
                 if (!res.containsKey(var_exponent)) 
                     res.put(var_exponent, var_coefficient); 
                 else 
@@ -100,51 +90,56 @@ public class Polynomial implements Copy {
 
         return res;
     }
+    public Map<Integer, Double> division(TreeMap<Integer, Integer> polyMap2) throws Exception {
+        Polynomial test = new Polynomial(polyMap2);
+        if (test.toStringInteger(test.gTreeMap()).compareTo("0") == 0)
+            throw new Exception("Division by 0");
 
-    public Map<Integer, Integer> division(TreeMap<Integer, Integer> polyMap2) {
-        Map<Integer, Integer> res = new TreeMap<>();
-        Map<Integer, Integer> polyMapAux = new TreeMap<>();
-        polyMapAux = DeepCopy(this.polyMap);
+        Map<Integer, Double> res = new TreeMap<>();
 
-        while (!this.polyMap.isEmpty() && polyMap2.lastKey() <= polyMap.lastKey()) {
-            int high_key1 = polyMap.lastKey(), high_key2 = polyMap2.lastKey();
+        while (!this.polyMap.isEmpty() && !polyMap2.isEmpty() && polyMap2.lastKey() <= polyMap.lastKey()) {
+            Integer high_key1 = polyMap.lastKey(), high_key2 = polyMap2.lastKey();
 
-            int var_expopent = high_key1 - high_key2;
-            int var_coefficient = this.polyMap.get(high_key1) / polyMap2.get(high_key2);
-            
-            res.put(var_expopent, var_coefficient);
+            Integer var_exponent = high_key1 - high_key2;
+            Double var_coefficient = (double) this.polyMap.get(high_key1) / polyMap2.get(high_key2);
 
-            TreeMap<Integer, Integer> toSub = new TreeMap<>();
+            TreeMap<Integer, Double> toSub = new TreeMap<>();
             for (Map.Entry<Integer, Integer> entry : polyMap2.entrySet()) {
-                int aux_exponent = entry.getKey() + var_expopent;
-                int aux_coefficient = entry.getValue() * var_coefficient;
+                Integer aux_exponent = entry.getKey() + var_exponent;
+                Double aux_coefficient = entry.getValue() * var_coefficient;
                 toSub.put(aux_exponent, aux_coefficient);
             }
 
-            for (Map.Entry<Integer, Integer> entry : toSub.entrySet()) {
-                int aux_exponent = entry.getKey();
-                int aux_coefficient = entry.getValue();
+            for (Map.Entry<Integer, Double> entry : toSub.entrySet()) {
+                Integer aux_exponent = entry.getKey();
+                Double aux_coefficient = entry.getValue();
 
                 if (polyMap.containsKey(aux_exponent)) {
-                    int sub_coefficient = polyMap.get(aux_exponent) - aux_coefficient;
+                    Double sub_coefficient = polyMap.get(aux_exponent) - aux_coefficient;
                     if (sub_coefficient != 0)
-                        polyMap.put(aux_exponent, sub_coefficient);
+                        polyMap.put(aux_exponent, sub_coefficient.intValue());
                     else
                         polyMap.remove(aux_exponent);
                 } else
-                    polyMap.put(aux_exponent, -aux_coefficient);
+                    polyMap.put(aux_exponent, -aux_coefficient.intValue());
+            }
+
+            if (var_coefficient != 0.0) {
+                res.put(var_exponent, var_coefficient);
             }
         }
 
         return res;
     }
 
+
+
     public Map<Integer, Integer> Differentiate() {
         Map<Integer, Integer> res = new TreeMap<>();
     
         for (Map.Entry<Integer, Integer> entry: polyMap.entrySet()) {
-            int exponent = entry.getKey();
-            int coefficient = entry.getValue();
+            Integer exponent = entry.getKey();
+            Integer coefficient = entry.getValue();
             if (exponent != 0)
                 res.put(exponent - 1, exponent * coefficient);
             else
@@ -167,4 +162,38 @@ public class Polynomial implements Copy {
     public TreeMap<Integer, Integer> gTreeMap() {
         return this.polyMap;
     }
+
+    public String toStringInteger(TreeMap<Integer, Integer> polyMap) {
+        StringBuilder result = new StringBuilder();
+        boolean firstTerm = true;
+
+        for (Map.Entry<Integer, Integer> var : polyMap.descendingMap().entrySet()) {
+            int coefficient = var.getValue();
+            int exponent = var.getKey();
+
+            if (coefficient != 0) {
+                if (coefficient > 0 && !firstTerm)
+                    result.append(" + ");
+
+                if (coefficient < 0)
+                    result.append(" - ");
+
+                if (Math.abs(coefficient) != 1 || exponent == 0)
+                    result.append(Math.abs(coefficient));
+
+                if (exponent != 0) {
+                    result.append("x");
+                    if (exponent > 1)
+                        result.append("^").append(exponent);
+                }
+
+                firstTerm = false;
+            }
+
+            if (result.isEmpty())
+                result.append(0);
+        }
+        return result.toString();
+    }
+
 }
