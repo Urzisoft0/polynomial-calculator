@@ -30,7 +30,7 @@ public class Polynomial{
             Integer var_exponent = var.getKey();
 
             if (polyMapAux2.get(var_exponent) != null) { 
-                Integer sum = var.getValue() + polyMapAux2.get(var_exponent);
+                int sum = var.getValue() + polyMapAux2.get(var_exponent);
 
                 if (sum != 0) {
                     res.put(var_exponent, sum);
@@ -57,7 +57,7 @@ public class Polynomial{
             Integer var_exponent = var.getKey();
 
             if (polyMapAux2.get(var_exponent) != null) {  
-                Integer sub = polyMap.get(var_exponent) - polyMapAux2.get(var_exponent);
+                int sub = polyMap.get(var_exponent) - polyMapAux2.get(var_exponent);
                 if (sub != 0) {
                     res.put(var_exponent, sub);
                     
@@ -115,9 +115,9 @@ public class Polynomial{
                 Double aux_coefficient = entry.getValue();
 
                 if (polyMap.containsKey(aux_exponent)) {
-                    Double sub_coefficient = polyMap.get(aux_exponent) - aux_coefficient;
+                    double sub_coefficient = polyMap.get(aux_exponent) - aux_coefficient;
                     if (sub_coefficient != 0)
-                        polyMap.put(aux_exponent, sub_coefficient.intValue());
+                        polyMap.put(aux_exponent, (int) sub_coefficient);
                     else
                         polyMap.remove(aux_exponent);
                 } else
@@ -131,8 +131,6 @@ public class Polynomial{
 
         return res;
     }
-
-
 
     public Map<Integer, Integer> Differentiate() {
         Map<Integer, Integer> res = new TreeMap<>();

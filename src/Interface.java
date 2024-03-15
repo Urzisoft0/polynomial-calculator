@@ -11,15 +11,15 @@ public class Interface extends JFrame {
     public Interface() {
         setTitle("Polynomial Calculator");
 
-        resultTextArea = new JTextArea(3, 33);
+        resultTextArea = new JTextArea(3, 50);
         resultTextArea.setEditable(false);
 
         poly1_input = new JTextField(25);
         poly2_input = new JTextField(25);
 
         JButton divisionB = new JButton("/ (Division)");
-        JButton derivativeB = new JButton("d/dx (Poly 1)");
-        JButton integrationB = new JButton("∫ (Poly 1)");
+        JButton derivativeB = new JButton("d/dx P1(x)");
+        JButton integrationB = new JButton("∫ P1(x) dx");
         JButton subtractB = new JButton("- (Subtraction)");
         JButton additionB = new JButton("+ (Addition)");
         JButton multiplicationB = new JButton("* (Multiplication)");
@@ -39,7 +39,7 @@ public class Interface extends JFrame {
         operation.add(divisionB);
 
         JPanel result = new JPanel();
-        result.add(new JLabel("Result:"));
+        result.add(new JLabel("Result: "));
         result.add(new JScrollPane(resultTextArea));
 
         multiplicationB.addActionListener(e -> {
